@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { FC, useState, useEffect, createContext } from 'react'
+import { Container, Grid, GridItem } from '@chakra-ui/react'
+import axios from 'axios'
+import TodoList from './components/Todos/TodoList'
+import AddTodoForm from './components/Todos/AddTodoForm'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Todo } from './types/Todos'
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface TodoContextValue {
+	todos: Todo[]
+	setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+}
+
+export const TodoContext = createContext<TodoContextValue>({ todos: [], setTodos: () => {}})
+
+const App: FC = () => {
+
+	const [todos, setTodos] = useState<Todo[]>([])
+
+	const BASE_URL = 'https://jsonplaceholder.typicode.com'
+
+	const fetchTodos = async () => {
+		const response = await axios.get(`${BASE_URL}/todos?_start=0&_limit=10&_sort=id&_order=asc`)
+		setTodos(response.data)
+	}
+
+	const handleAddTodo = () => {
+		fetchTodos()
+	}
+
+	useEffect(() => {
+		fetchTodos()
+	}, [])
+	
+	return (
+		<>
+			<Container
+				maxW='container.xl'
+				color='white'
+			>
+				<TodoContext.Provider value={{ todos, setTodos }}>
+					<Grid
+						templateColumns='repeat(2, 1fr)'
+						gap={6}
+					>
+						<GridItem w='100%' h='full' color='gray.900'>
+							<AddTodoForm onAddTodo={handleAddTodo}/>
+						</GridItem>
+						<GridItem w='100%' h='full' bg='facebook.100' color='gray.900'>
+							<TodoList 
+								data={todos}
+								// handleTodo={(data: Todo[]) => setTodos(data)}
+							/>
+						</GridItem>
+					</Grid>
+				</TodoContext.Provider>
+			</Container>
+		</>
+	)
 }
 
 export default App
