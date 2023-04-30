@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { FC, useEffect } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App:FC = () => {
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	type APIResponse<T> = {
+		message: string,
+		results: T
+	}
+
+	type User = {
+		id: number
+		name: string
+	}
+
+	type Todo = {
+		task: string,
+		completed: boolean
+	}
+
+	type Student = {
+		id: number,
+		name: string,
+		age: number,
+		gender: string
+	}
+
+	type CreateStudent = Omit<Student, 'id' | 'email'>
+	type UpdateUser = Partial<Omit<Student, 'id'>>
+	type SomethingUser = Pick<Student, 'name' | 'gender'>
+	type SomethingUser2 = Required<Student>
+
+	const fetchUser = () => {
+		const results = { id: 1, name: "Chelle" } as User
+		return { message: 'Success', results } as APIResponse<User>
+	}
+
+	const fetchTodo = () => {
+		const results = { task: 'Play valorant', completed: false } as Todo
+		return { message: 'Pending', results } as APIResponse<Todo>
+	}
+
+	const request: Partial<Student> = {
+		id: 1,
+		name: "Chelle",
+		gender: "male"
+	}
+
+	useEffect(() => {
+		const user = fetchUser()
+		const todo = fetchTodo()
+		console.log('user', user)
+		console.log('todo', todo)
+	}, [])
+
+	return (
+		<div>
+
+		</div>
+	)
 }
 
 export default App
